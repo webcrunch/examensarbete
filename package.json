@@ -1,1 +1,34 @@
-
+{
+  "name": "examensarbete",
+  "version": "1.0.0",
+  "description": "an practical thesis. Working on an artefact as an cms",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webcrunch/examensarbete.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/webcrunch/examensarbete/issues"
+  },
+  "homepage": "https://github.com/webcrunch/examensarbete#readme",
+    "dependencies": {
+    "body-parser": "*",
+    "compression": "*",
+    "cookie-parser": "*",
+    "debug": "*",
+    "express": "*",
+    "express-session": "^1.14.2",
+    "gulp": "*",
+    "gulp-clean-css": "*",
+    "gulp-less": "*",
+    "mongoose": "*",
+    "mysql": "^2.12.0",
+    "serve-favicon": "*"
+  }
+}
