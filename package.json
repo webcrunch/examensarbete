@@ -11,13 +11,13 @@
     "url": "git+https://github.com/webcrunch/examensarbete.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "jarl Lindquist",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/webcrunch/examensarbete/issues"
   },
   "homepage": "https://github.com/webcrunch/examensarbete#readme",
-    "dependencies": {
+  "dependencies": {
     "body-parser": "*",
     "compression": "*",
     "cookie-parser": "*",
@@ -29,6 +29,9 @@
     "gulp-less": "*",
     "mongoose": "*",
     "mysql": "^2.12.0",
-    "serve-favicon": "*"
-  }
+    "serve-favicon": "*",
+    "multer": "^1.2.0",
+    "nodemailer": "^3.1.2",
+  },
+  "devDependencies": {}
 }
