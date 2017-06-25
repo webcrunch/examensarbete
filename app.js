@@ -1,15 +1,29 @@
-const express = require('express');
-const app = express();
-const session		=	require('express-session');
-const bodyParser  	= 	require('body-parser');
-const mysql      = require('mysql');
-const js_orm = require('js-hibernate');
-const port = 3002;
-const auth = require('./modules/auth.js');
-const random = require('./modules/random.js');
-const mail = require('./modules/mailSend.js');
-const MySQLStore = require('express-mysql-session')(session);
- var bcrypt = require('bcryptjs');
+
+const r = require,
+express = r('express'),
+fs = r("fs"),
+path = r("path"),
+app = express(),
+session		=	r('express-session'),
+bodyParser  	= 	r('body-parser'),
+mysql      = r('mysql'),
+js_orm = r('js-hibernate'),
+appRoot = path.normalize(__dirname + '/'),
+
+	Server = {
+				endpoint : '/',
+				webRoot: 'www',
+				fileRoot: appRoot + 'www',
+				indexFile: '/index.html',
+				port: 3002
+			},
+
+			
+auth = r('./modules/auth.js'),
+random = r('./modules/random.js'),
+mail = r('./modules/mailSend.js'),
+MySQLStore = r('express-mysql-session')(session),
+bcrypt = r('bcryptjs');
 
 
 const config = {
@@ -45,6 +59,11 @@ const tempuserMap = session_js.tableMap('tempuser')
 
 
 	    // use session middleware
+app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js')); // redirect bootstrap JS
+app.use('/js', express.static(__dirname + '/node_modules/jquery/dist')); // redirect JS jQuery
+app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css')); // redirect CSS bootstrap
+app.use('/js', express.static(__dirname + '/node_modules/angular')); // redirect angular JS
+app.use(express.static('www'));
 	    app.use(session({ genid: function(req) {
 	    	if (typeof req.sessionID != 'undefined') return req.sessionID;
 	    },
@@ -67,6 +86,7 @@ const tempuserMap = session_js.tableMap('tempuser')
 			var saltRounds = 10;
 
    	bcrypt.genSalt(saltRounds, (err, salt) => {
+   		console.log(salt);
 				if(err)console.log(err);
 				//we create the hashed password from the salt
 				bcrypt.hash(req.body.pass, salt, (err, hash) => {
@@ -133,6 +153,7 @@ const tempuserMap = session_js.tableMap('tempuser')
 
 
 		app.post('/login', (req,res)=>{
+			console.log(req.body);
 // auth.auth(, (result)=>{
 // 	console.log(result);
 // })
@@ -191,7 +212,13 @@ app.get('/dashboard', (req,res)=>{
 	}
 })
 
+app.get(Server.endpoint, (req, res) => {
+	res.header('X-Client-id', req.sessionID).header('X-username', req.session.xUsername).header('X-access', req.session.xAccess).header("Access-Control-Allow-Methods", "GET, POST","PUT").header("Access-Control-Allow-Headers", "X-Requested-With").header("Access-Control-Allow-Origin", "*");   
+			res.sendFile(appRoot + Server.webRoot + Server.indexFile);
+			// res.json({1:appRoot, 2:Server.webRoot, 3:Server.indexFile});
+});
+
    // listen on port 3002
-   app.listen(port,  function() {
-   	console.log("Server listening on port ", port);
+   app.listen(Server.port,  function() {
+   	console.log("Server listening on port ", Server.port);
    });
