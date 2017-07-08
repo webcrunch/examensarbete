@@ -3,7 +3,7 @@
 <head>
 	<title>examensarbete</title>
 		<!-- base href for Angular (HTML5 mode) -->
-		<base href="/">
+			<base href="/">
 
 		<!-- meta tag for bootstrap (mobile devices) -->
 		<meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,7 +12,9 @@
 <script src="/js/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.3.1/js/tether.min.js"></script>
 <!-- angular link -->
-<script src="/js/angular.min.js""></script>
+<script src="/js/angular.min.js"></script>
+<script src="/upload/ng-file-upload-shim.min.js"></script>
+<script src="/upload/ng-file-upload-all.js"></script>
 <script src="./libs/angular-touch.min.js"></script>
 <script src="./libs/angular-route.min.js"></script>
 <script src="./libs/angular-resource.min.js"></script>
@@ -23,118 +25,22 @@
 
 	<!-- Controllers -->
 		<script src="app.js"></script>
+		
+			<!-- Directives -->
+		<script src="directives/headerNav.js"></script>
+		<script src="directives/fileUpload.js"></script>
+		<script src="directives/footerSticky.js"></script>
 
-</head>
-<body>
-<!-- interact angular into this and the take the othwr structure and inpmlement it to -->
-<nav class="navbar navbar-toggleable-md navbar-light bg-faded">
-  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <a class="navbar-brand" href="#">Navbar</a>
+		</head>
+		<body>
+		<!-- interact angular into this and the take the othwr structure and inpmlement it to -->
+		<header-nav></header-nav>
+		<ng-view></ng-view>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#"><span class="fa fa-home fa-fw aria-hidden="true""></span>Home </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>        	
-      </li>
-      
-      <li class="nav-item ">
-        <a class="nav-link" href="#">Link</a>
-      </li>
-      <li class="nav-item btn-toolbar">
-      	<a class=" nav-link"><span class="fa fa-sign-out fa-fw aria-hidden="true""></span> Log out -deleteSession() </a>
-      </li>
-      <li class="nav-item dropdown ">
-        <a class="nav-link dropdown-toggle " id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fa fa-sign-in fa-fw"></span>
-          Log In
-        </a>
-            <ul class="dropdown-menu ">
-              <li>
-                <form class="form" role="form" id="login-nav">
-                  <h2 class="form-signin-heading">Log in</h2>
-                  <div class="form-group">
-                    <label class="sr-only" for="email">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="Email" required autofocus>
-                  </div>
-                  <div class="form-group">
-                    <label class="sr-only" for="inputPassword">Password</label>
-                    <input type="password"  class="form-control" id="inputPassword" placeholder="Password" required autofocus>
-                  </div>
-                  <div class="form-group">
-                    <button type="submit" class="btn btn-lg btn-success btn-block" id="">Log In</button>
-                  </div>
-                  <li class="divider"></li>
-                  <div class="buttonsapcer">
-                    <a href="/resetpassword" class="regis">
-                      <p class="textcenter">Forgot your password?</p>
-                    </a>
-                  </div>
-                </form>
-              </li>
-            </ul>
-
-      </li>
-
-      <li class="nav-item dropdown ">
-        <a class="nav-link dropdown-toggle " id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fa fa-user-plus fa-fw"></span>
-          Register
-        </a>
-            <ul class="dropdown-menu">
-              <li>	
-                <form class="form" role="form" id="sign-up-nav">
-                  <h2 class="form-signin-heading">Create Account</h2>
-                  <div class="form-group">
-                    <label class="sr-only" for="email">Email</label>
-                    <input type="email" ng-model="email" class="form-control" id="email" placeholder="Email" required autofocus>
-                  </div>
-                  <div class="form-group">
-                    <label class="sr-only" for="inputname">Firstname</label>
-                    <input type="text" ng-model="registername" class="form-control" id="registername" placeholder="Firstname" required autofocus>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="sr-only" for="inputname">Lastname</label>
-                    <input type="text" ng-model="lastname" class="form-control" id="lastname" placeholder="Lastname" required autofocus>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="sr-only" for="inputPassword">Password</label>
-                    <input type="password" class="form-control" id="inputPassword" placeholder="Password" required autofocus>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="sr-only" for="input_re-enter-password">input_re-enter-passwor</label>
-                    <input type="password" class="form-control" id="input_re-enter-password" placeholder="Re-enter Password" required ng-match="password">
-                  </div>
-
-                  <span ng-show="IsMatch">Passwords have to match!</span>
-
-                  <div class="buttonspacer">
-                    <p class="">Terms of use: <a ng-href="/termsofuse">Terms</a></p>
-                    <input type="checkbox" name="checkbox" value="agree" ng-modal="agree"> I agree
-                    <br>
-                  </div>
-                  <div class="buttonspacer">
-                    <button class="btn btn-lg btn-primary btn-block " data-toggle="dropdown" >Register now</button>
-                  </div>
-                </form>
-              </li>
-    
-        </ul><!--Finish-->
-      </li>
-
-    </ul>
-    
-  </div>
-</nav>
-
-	<ng-view></ng-view>
-
-
-</body>
-</html>
+		 <footer>		  
+			<!--Tag for our footerSticky directive --> 
+			<footer-sticky></footer-sticky>    	
+		</footer>
+		</body>
+		</html>
 

@@ -1,0 +1,9 @@
+<form id="form1" runat="server"> 
+<label>Choose an image from your device.</label>
+<p><font size="2">This is the main image associated with you project. Make it count!</font></p>
+<p><font size="2">JPEG, PNG, GIF, or BMP &bull; 2MB file limit</font></p>
+<p><font size="2">Height between 250x1080 pixels</font></p>
+<p><font size="2">Width between 250x1920 pixels</font></p>
+  <input type="file" id="file-input" file-model="myFile" ;"/>
+       <button id="pictureBlock" class="btn btn-continue col-xs-8 col-md-8 col-lg-8" ng-controller="fileController"  ng-click="uploadFile()" value="Continue">CONTINUE</button>
+</form>
