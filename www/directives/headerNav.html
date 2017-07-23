@@ -2,29 +2,32 @@
   <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <a class="navbar-brand" href="#">Navbarddd</a>
+  <a class="navbar-brand" href="#">Content Management System</a>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" href="#"><span class="fa fa-home fa-fw aria-hidden="true""></span>Home </a>
+        <a class="nav-link" href="/"><span class="fa fa-home fa-fw aria-hidden="true""></span>Home </a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">galleri</a>        	
+      <li class="nav-item" ng-show="upload">
+        <a class="nav-link" href="/upload"><span class="fa fa-upload fa-fw" aria-hidden="true"></span>Upload files </a>
+      </li>
+      <li class="nav-item" >
+        <a class="nav-link" href="/gallery"><span class="fa fa-th fa-fw" aria-hidden="true"></span>Galleri</a>
       </li>
       
-      <li class="nav-item ">
-        <a class="nav-link" href="#">Link</a>
+      <li class="nav-item" ng-show="showDash" >
+        <a class="nav-link" href="/dashboard">Dashboard</a>
       </li>
-      <li class="nav-item btn-toolbar">
-      	<a class=" nav-link"><span class="fa fa-sign-out fa-fw aria-hidden="true""></span> Log out -deleteSession() </a>
+      <li class="nav-item btn-toolbar" ng-show="showLogout">
+      	<a class=" nav-link" ng-click="deleteSession()"><span class="fa fa-sign-out fa-fw aria-hidden="true""></span> Log out </a>
       </li>
-      <li class="nav-item dropdown ">
+      <li class="nav-item dropdown" ng-show="showLogin">
         <a class="nav-link dropdown-toggle " id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fa fa-sign-in fa-fw"></span>
           Log In
         </a>
-            <ul class="dropdown-menu ">
-              <li>
+            <ul class="dropdown-menu">
+              <li >
                 <form class="form" role="form" id="login-nav">
                   <h2 class="form-signin-heading">Log in</h2>
                   <div class="form-group">
@@ -35,8 +38,8 @@
                     <label class="sr-only" for="inputPassword">Password</label>
                     <input type="password" ng-model="pass" class="form-control" id="inputPassword" placeholder="Password" required autofocus>
                   </div>
-                  <div class="form-group">
-                    <button ng-click="login()" class="btn btn-lg btn-success btn-block" id="">Log In</button>
+                  <div class="form-group" >
+                    <button  ng-click="login()" class="btn btn-lg btn-success btn-block" id="">Log In</button>
                   </div>
                   <li class="divider"></li>
                   <div class="buttonsapcer">

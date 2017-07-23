@@ -31,13 +31,15 @@
     "mysql": "^2.12.0",
     "serve-favicon": "*",
     "multer": "^1.2.0",
+    "multer-s3": "^2.7.0",
     "fs": "*",
     "js-hibernate": "*",
     "express-mysql-session": "*",
-      "bootstrap": "4.0.0-alpha.6",
+    "bootstrap": "4.0.0-alpha.6",
     "jquery": "^3.2.1",
     "nodemailer": "*",
-     "bcryptjs": "^2.4.3"
+     "bcryptjs": "^2.4.3",
+     "aws-sdk": "^2.43.0",
   },
   "devDependencies": {}
 }

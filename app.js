@@ -2,38 +2,60 @@
 const                         r = require,
 express                    = r('express'),
 fs                              = r("fs"),
-path                          = r("path"),
+
+multer                 = require('multer'),
 app                           = express(),
+aws                  = require('aws-sdk'),
+multerS3             = require('multer-s3'),
+serverConst             = r('./modules/auth.js'),
 Session            = r('express-session'),
-bodyParser  	         = r('body-parser'),
+bodyParser               = r('body-parser'),
 mysql                        = r('mysql'),
 js_orm = r('js-hibernate'),
-appRoot = path.normalize(__dirname + '/'),
+
 
 Server = {
-	endpoint : '*',
-	webRoot: 'www',
-	fileRoot: appRoot + 'www',
-	indexFile: '/index.html',
-	port: 3002
+    endpoint : serverConst.endpoint,
+    webRoot: serverConst.webRoot,
+    fileRoot: serverConst.fileRoot,
+    indexFile: serverConst.indexFile,
+    port: serverConst.port
 },
 
 
-auth             = r('./modules/auth.js'),
 random         = r('./modules/random.js'),
 mail         = r('./modules/mailSend.js'),
 MySQLStore = r('express-mysql-session')(Session),
 bcrypt = r('bcryptjs');
+/*End of const declaration*/
 
 
 
-var multer  = require('multer');
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './images/')
-    },
-    filename: function (req, file, cb) {
-    	let mimeType = file.mimetype;
+aws.config.update({
+            signatureVersion: serverConst.signatureVersion,
+            secretAccessKey: serverConst.secretAccessKey,
+            accessKeyId: serverConst.accessKey,
+            region: serverConst.region
+        });
+
+
+var s3 = new aws.S3();  
+
+var fullImg = "";
+
+
+var upload  = multer({
+          storage: multerS3({
+            s3: s3,
+            bucket: serverConst.bucket,
+            acl: serverConst.acl,
+            metadata: function (req, file, cb) {
+                
+              cb(null, {fieldName: file.fieldname});
+            },
+            key: function (req, file, cb) {
+                
+                let mimeType = file.mimetype;
         let pointer = ".";
         let originalname = file.originalname;
         let addpointer = mimeType.slice(6,mimeType.length);
@@ -42,42 +64,36 @@ var storage = multer.diskStorage({
         let sameNameWithoutEndOfFile = originalname.slice(0, originalname.length-4);
         
 
-        cb(null, sameNameWithoutEndOfFile + '-' + Date.now() + endOfFile);
-    }
-});
-var upload = multer({ storage: storage });
+
+        fullImg = sameNameWithoutEndOfFile + '-' + Date.now() + endOfFile;
+        
+              cb(null, fullImg);
+            }
+          })
+        });
 
 
 
 
 
-app.post('/multer', upload.any(), function (req, res) {
-    // uploaded the files, got the filen name and the route. Insert it into the database. 
-    // ?? Who uploaded it ? that is the question to answer. 
-    // How is the database working with images. 
-    // console.log(req.files[0]);
-    res.end("File uploaded.");
-});
-
-
-
+// var upload = multer({ storage: storage });
 
 const config = {
-	host     : '127.0.0.1',
-	user     : 'root',
-	password : 'vbcdb2016',
-	database : 'examensdb',
-	protocol: 'mysql',
-	port: 3306
+	host     : serverConst.host,
+	user     : serverConst.user,
+	password : serverConst.password,
+	database : serverConst.database,
+	protocol: serverConst.protocol,
+	port: serverConst.portServer
 }
 
 const connection = mysql.createConnection({
-	host     : '127.0.0.1',
-	user     : 'root',
-	password : 'vbcdb2016',
-	database : 'examensdb',
-	protocol: 'mysql',
-	port: 3306
+	host     : serverConst.host,
+    user     : serverConst.user,
+    password : serverConst.password,
+    database : serverConst.database,
+    protocol: serverConst.protocol,
+    port: serverConst.portServer
 });
 
 const session_js = js_orm.session(config);	
@@ -96,12 +112,24 @@ const userMap = session_js.tableMap('users')
 .columnMap('date', "time", {isAutoIncrement: true});
 
 const tempuserMap = session_js.tableMap('tempuser')
-.columnMap('id', 'id')
+.columnMap('id', 'id' )
 .columnMap('uName','userName')
 .columnMap('fName','firstName')
 .columnMap('lName','lastName')
 .columnMap('pass','password')
 .columnMap('email','email');
+
+const imgUploadMap = session_js.tableMap('images')
+.columnMap('id', 'id' ,{isAutoIncrement: true})
+.columnMap('imageName', 'name')
+.columnMap('pathForImage', 'path')
+.columnMap('extention', 'type')
+.columnMap('WhoUploaded', 'user');
+
+const commentsMap = session_js.tableMap('comment')
+.columnMap('id', 'id', {isAutoIncrement: true})
+.columnMap('comment', 'text')
+.columnMap('toWho', 'image');
 
 
 	    // use session middleware
@@ -116,8 +144,8 @@ app.use(express.static('www'));
 app.use(Session({ genid: function(req) {
 	if (typeof req.sessionID != 'undefined') return req.sessionID;
 },
-key: 'vbccookie',
-secret: 'SUW15-secret',
+key: serverConst.key,
+secret: serverConst.secret,
 store: sessionStore,
 saveUninitialized: true,
 resave: true
@@ -131,6 +159,47 @@ resave: true
     app.use(bodyParser.json());
 
     app.disable('x-powered-by');
+
+
+
+    app.post('/multer', upload.any(), function (req, res) {
+    // uploaded the files, got the filen name and the route. Insert it into the database. 
+    // ?? Who uploaded it ? that is the question to answer. 
+    // How is the database working with images. 
+    let imageparse = JSON.parse(req.body.data);
+    let  imgArray = imageparse.name.split('.');
+    
+
+    let image ={
+        'imageName': fullImg,
+        'pathForImage': "https://s3.eu-west-2.amazonaws.com/mybucketforupload/" + fullImg ,
+        'extention' : imgArray[1],
+        'WhoUploaded': imageparse.user
+    };
+
+    console.log(image);
+    fullImg = "";
+    imgUploadMap.Insert(image).then((result)=>{
+                        console.log("inserted :" + result.affectedRows);
+                        res.end("File uploaded.");
+                    }).catch((error)=>{
+                        console.log("Error" + error);
+                        res.json(error);
+                    })
+    
+    });
+
+
+    app.get('/imgGet' , (req,res)=>{
+
+var query = session_js.query(imgUploadMap).select();
+   query.then((result)=> {
+      res.json(result);
+  }).catch((err)=>{
+      res.json("e", err);
+  })
+        
+    })
 
 
     app.post('/register', (req,res)=>{ 
@@ -166,8 +235,8 @@ resave: true
 						res.json(error);
 					})
 
-    		// mail.sendMail("google.se", insertPers.id);
-    		res.json("we have sent you an confirmation mail. If you have got any check your spam mail.");
+                  mail.sendMail("google.se", insertPers.id);
+                  res.json("we have sent you an confirmation mail. If you have got any check your spam mail.");
 
 					});// end of hash function 
 			});// end of genSalt function 
@@ -238,15 +307,17 @@ resave: true
     			if(err){
     				console.log("err" ,err);
     				res.sendStatus(400);
-    				    			}
-    			else{
-    					 req.session.isLoggedIn = result[0].user_id; 
-                req.session.xUsername = result[0].first_name;
-                req.session.xAccess = result[0].user_type;
-                req.sessionID = result[0].user_id.toString();
-                res.header('X-Client-id', req.sessionID).header('X-username', req.session.xUsername).header('X-access', req.session.xAccess).header('x-session_id', req.session_id);           
-                var responseData = {'user_id': result[0].user_id, 'email': result[0].email, 'username': result[0].first_name};
-                res.json(responseData); 
+             }
+             else{
+
+                 req.session.isLoggedIn = result[0].id; 
+                 req.session.xUsername = result[0].username;
+                 req.session.xAccess = result[0].userType;
+                 req.sessionID = result[0].id.toString();
+
+                 res.header('X-Client-id', req.sessionID).header('X-username', req.session.xUsername).header('X-access', req.session.xAccess).header('x-session_id', req.session_id);           
+                 var responseData = {'user_id': result[0].id, 'email': result[0].email, 'username': result[0].username};
+                 res.json(responseData); 
 
 
     			// 		req.sessionID = result[0].id;
@@ -256,81 +327,59 @@ resave: true
     			// req.session.save();
     			// res.header('X-Client-id', req.sessionID).header('X-username', req.session.xUsername).header('X-access', req.session.xAccess);
        //    res.json(response[0].xUsername, "hej"); 
-    			}
+   }
 
-  })
+})
 
     	}).catch(function(error) {
     		console.log('Error: ' + error);
     	});
+    });
+
+
+    function logout(req, res){
+      delete req.sessionID;
+      delete req.session.xAccess;
+      req.session.destroy(function(err){
+        res.json({loggedOut: true});
+    });
+  }
+
+  app.delete('/login/deletesession', (req, res) =>{
+      logout(req, res);
+
+  });
+
+  app.get('/check', (req,res)=>{
+   var query = session_js.query(userMap).select();
+   query.then((result)=> {
+      res.json(result);
+  }).catch((err)=>{
+      res.json("e", err);
+  })
+
+})
+
+
+  app.get('/dashboard', (req,res)=>{
+   console.log(req.session.username);
+   if(req.session.username == 'undefined'){
+      res.json("not logged in");
+  }
+  else{
+      res.json(req.session.username);
+  }
+})
 
 
 
-
-
-// 	console.log(result);
-// })
-
-// 	    auth(req.body, (response, err) => {
-// 	    	if(true){
-// 	    		res.json(true);
-// 	    	}else{
-// 	    		res.json(false);
-// 	    	}
-
-// 			});
-
-	// var query = session_js.query(userMap)
- //    		.where(
- //        userMap.uName.Equal(req.body.userName)
- //        .And()
- //        .email.Equal(req.body.email)
- //        );
- //        query.then(function(result) {
- //     		if(result.length > 0){
-
- //    		
- //    		}
- //    		}).catch(function(error) {
- //    			console.log(error);
- //    res.json(false);
-	// });
-
-});
-
-app.post('/multer', upload.single('file'));
-
-
-    app.get('/check', (req,res)=>{
-    	var query = session_js.query(userMap).select();
-    	query.then((result)=> {
-    		res.json(result);
-    	}).catch((err)=>{
-    		res.json("e", err);
-    	})
-
-    })
-
-
-    app.get('/dashboard', (req,res)=>{
-    	console.log(req.session.username);
-    	if(req.session.username == 'undefined'){
-    		res.json("not logged in");
-    	}
-    	else{
-    		res.json(req.session.username);
-    	}
-    })
-
-
-
-    app.get(Server.endpoint, (req, res) => {
-    	res.header('X-Client-id', req.sessionID).header('X-username', req.session.xUsername).header('X-access', req.session.xAccess).header("Access-Control-Allow-Methods", "GET, POST","PUT").header("Access-Control-Allow-Headers", "X-Requested-With").header("Access-Control-Allow-Origin", "*");   
-    	res.sendFile(appRoot + Server.webRoot + Server.indexFile);
+  app.get(Server.endpoint, (req, res) => {
+   res.header('X-Client-id', req.sessionID).header('X-username', req.session.xUsername).header('X-access', req.session.xAccess).header("Access-Control-Allow-Methods", "GET, POST","PUT").header("Access-Control-Allow-Headers", "X-Requested-With").header("Access-Control-Allow-Origin", "*");   
+   res.sendFile(serverConst.appRoot + Server.webRoot + Server.indexFile);
 			// res.json({1:appRoot, 2:Server.webRoot, 3:Server.indexFile});
 			
 		});
-
+ 
    // listen on port 3002
    app.listen(Server.port,  function() {
    	console.log("Server listening on port ", Server.port);

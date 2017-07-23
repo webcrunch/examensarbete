@@ -1,0 +1,32 @@
+<div class="container">
+	<div ng-controller="dashboardCtrl">
+		<div class="col-md-12">
+			<center><h1>Welcome to {{name}}s dashboard!</h1></center>
+			<div class="container">
+				<ul class="nav nav-tabs" ng-init="selectedTab = 'survey'">
+
+					<!-- <li ng-class="{'active':selectedTab === 'home'}"><a ng-click="showDefault(); selectedTab = 'home'">Home</a></li> -->	
+
+		   	  <li><a ng-click="showSurveys(); selectedTab = 'survey'">My Surveys</a></li>
+
+		    	<li><a ng-click="showProfile(); selectedTab = 'profile'">Profile</a></li>
+		 		</ul>
+		 	</div>
+		 <!-- 	<div class="col-md-12">
+				<div ng-show="defaultBool">
+				<home-tab></home-tab>
+				</div>
+			</div> -->
+			<div class="col-md-12">
+				<div ng-show="surveysBool">
+					<dashboard-surveys></dashboard-surveys>
+				</div>
+			</div>
+			<div class="col-md-12">
+				<div ng-show="profileBool">
+					<dashboard-profile></dashboard-profile>
+				</div>
+			</div>
+		</div>	
+	</div>
+</div>

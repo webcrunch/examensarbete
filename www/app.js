@@ -13,22 +13,22 @@ app.config(["$routeProvider", "$locationProvider", function($routeProvider, $loc
 		templateUrl: "views/home.html",
 		controller: ""
 	})
-	$routeProvider.when("/1",{
+	$routeProvider.when("/upload",{
 		templateUrl: "views/upload.html",
 		controller: ""
 	})
-	// .when("/2",{
-	// 	templateUrl: "views/",
-	// 	controller: ""
-	// })
-	// .when("/resetpassword",{
-	// 	templateUrl: "views/resetpassword.html",
-	// 	controller: "resetCtrl"
-	// })
-	// .when("/dashboard/:id?",{
-	// 	templateUrl: "views/dashboard.html",
-	// 	controller: "dashboardCtrl"
-	// })
+	.when("/gallery",{
+		templateUrl: "views/gallery.html",
+		controller: ""
+	})
+	.when("/resetpassword",{
+		templateUrl: "views/resetpassword.html",
+		controller: ""
+	})
+	.when("/dashboard/",{//:id?
+		templateUrl: "views/dashboard.html",
+		controller: "dashboardCtrl"
+	})
 	// .when("/todo	",{
 	// 	templateUrl: "views/surveytemplate.html",
 	// 	controller: "surveytemplateCtrl"
