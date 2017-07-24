@@ -15,6 +15,7 @@ js_orm = r('js-hibernate'),
 
 
 Server = {
+    appRoot : serverConst.appRoot,
     endpoint : serverConst.endpoint,
     webRoot: serverConst.webRoot,
     fileRoot: serverConst.fileRoot,
@@ -34,7 +35,7 @@ bcrypt = r('bcryptjs');
 aws.config.update({
             signatureVersion: serverConst.signatureVersion,
             secretAccessKey: serverConst.secretAccessKey,
-            accessKeyId: serverConst.accessKey,
+            accessKeyId: serverConst.accessKeyId,
             region: serverConst.region
         });
 
@@ -64,7 +65,7 @@ var upload  = multer({
         let sameNameWithoutEndOfFile = originalname.slice(0, originalname.length-4);
         
 
-
+console.log(endOfFile);
         fullImg = sameNameWithoutEndOfFile + '-' + Date.now() + endOfFile;
         
               cb(null, fullImg);
@@ -162,7 +163,7 @@ resave: true
 
 
 
-    app.post('/multer', upload.any(), function (req, res) {
+    app.post('/multer', upload.any(), (req, res) =>{
     // uploaded the files, got the filen name and the route. Insert it into the database. 
     // ?? Who uploaded it ? that is the question to answer. 
     // How is the database working with images. 
@@ -318,15 +319,6 @@ var query = session_js.query(imgUploadMap).select();
                  res.header('X-Client-id', req.sessionID).header('X-username', req.session.xUsername).header('X-access', req.session.xAccess).header('x-session_id', req.session_id);           
                  var responseData = {'user_id': result[0].id, 'email': result[0].email, 'username': result[0].username};
                  res.json(responseData); 
-
-
-    			// 		req.sessionID = result[0].id;
-    			// 		console.log(req.sessionID);
-    			// req.session.xAccess = result.email;
-    			// req.session.xUsername = result.username;
-    			// req.session.save();
-    			// res.header('X-Client-id', req.sessionID).header('X-username', req.session.xUsername).header('X-access', req.session.xAccess);
-       //    res.json(response[0].xUsername, "hej"); 
    }
 
 })
