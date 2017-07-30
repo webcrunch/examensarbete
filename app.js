@@ -13,6 +13,7 @@ bodyParser               = r('body-parser'),
 mysql                        = r('mysql'),
 js_orm = r('js-hibernate'),
 
+Sequelize = r('sequelize'),
 
 Server = {
     appRoot : serverConst.appRoot,
@@ -26,10 +27,11 @@ Server = {
 
 random         = r('./modules/random.js'),
 mail         = r('./modules/mailSend.js'),
+newpass         = r('./modules/sendpass.js'),
+models =           r('./modules/models.js'),
 MySQLStore = r('express-mysql-session')(Session),
 bcrypt = r('bcryptjs');
 /*End of const declaration*/
-
 
 
 aws.config.update({
@@ -65,7 +67,7 @@ var upload  = multer({
         let sameNameWithoutEndOfFile = originalname.slice(0, originalname.length-4);
         
 
-console.log(endOfFile);
+
         fullImg = sameNameWithoutEndOfFile + '-' + Date.now() + endOfFile;
         
               cb(null, fullImg);
@@ -79,6 +81,42 @@ console.log(endOfFile);
 
 // var upload = multer({ storage: storage });
 
+const sequelize = new Sequelize(serverConst.database, serverConst.user, serverConst.password, {
+  host: 'localhost',
+  dialect: 'mysql',
+    // define: {
+    //     timestamps: false
+    // },
+
+  pool: {
+    max: 5,
+    min: 0,
+    idle: 10000
+  }
+});
+ 
+
+sequelize.authenticate().then(function(err) {
+    if (!!err) {
+        console.log('Unable to connect to the database:', err)
+    } else {
+        console.log('Connection has been established successfully.')
+    }
+});
+
+const User = models.User;
+ 
+User.sync();
+const TUser = models.Tuser; 
+TUser.sync();
+
+const I = models.image;
+// const TUser = models.Tuser; 
+I.sync({logging: console.log });
+
+
+const comment = models.comment;
+comment.sync({logging: console.log})
 const config = {
 	host     : serverConst.host,
 	user     : serverConst.user,
@@ -97,20 +135,11 @@ const connection = mysql.createConnection({
     port: serverConst.portServer
 });
 
+
+
 const session_js = js_orm.session(config);	
 var sessionStore = new MySQLStore(config);
 
-
-const userMap = session_js.tableMap('users')
-.columnMap('id', 'id', {isAutoIncrement: true})
-.columnMap('uName','username')
-.columnMap('fName','firstName')
-.columnMap('lName','lastName')
-.columnMap('pass','password')
-.columnMap('roll', "userType")
-.columnMap('email','email')
-.columnMap('updateP','updateP')
-.columnMap('date', "time", {isAutoIncrement: true});
 
 const tempuserMap = session_js.tableMap('tempuser')
 .columnMap('id', 'id' )
@@ -173,12 +202,11 @@ resave: true
 
     let image ={
         'imageName': fullImg,
-        'pathForImage': "https://s3.eu-west-2.amazonaws.com/mybucketforupload/" + fullImg ,
+        'pathForImage': serverConst.bucket + fullImg ,
         'extention' : imgArray[1],
         'WhoUploaded': imageparse.user
     };
 
-    console.log(image);
     fullImg = "";
     imgUploadMap.Insert(image).then((result)=>{
                         console.log("inserted :" + result.affectedRows);
@@ -203,6 +231,39 @@ var query = session_js.query(imgUploadMap).select();
     })
 
 
+    app.post('/resetpass', (req,res)=>{
+        let changeEmail = req.body.email;
+        var query = session_js.query(userMap)
+        .where(
+        userMap.email.Equal(changeEmail) // =  
+        );
+
+        query.then(function(result) {
+          
+        if(result.length >= 1 ? addaNewPass(changeEmail) : res.json(false) );
+        res.json(true)
+        });
+    })
+
+function addaNewPass(email){
+    let newData = {
+        email : email,
+        updateP : random.randomizer()
+    }
+     console.log(newData.email);
+
+    let updateSQL =  "UPDATE users SET updateP = " + newData.updateP + " WHERE email ="  + newData.email;
+
+    let query = session_js.executeSql(updateSQL);
+    
+query.then(function(result) {
+    console.log(result); // array with result 
+}).catch(function(error) {
+    console.log('Error: ' + error);
+});
+    // newpass.sendPass(changeEmail, 
+}
+
     app.post('/register', (req,res)=>{ 
 
     	var query = session_js.query(userMap)
@@ -212,7 +273,7 @@ var query = session_js.query(imgUploadMap).select();
 
     	query.then(function(result) {
 
-    		if(result.length < 1){
+    		if(result.length < 1 ){
 					//amount of times we "salt" the password
 					var saltRounds = 10;
 					bcrypt.genSalt(saltRounds, (err, salt) => {
@@ -236,7 +297,7 @@ var query = session_js.query(imgUploadMap).select();
 						res.json(error);
 					})
 
-                  mail.sendMail("google.se", insertPers.id);
+                  mail.sendMail(email, insertPers.id);
                   res.json("we have sent you an confirmation mail. If you have got any check your spam mail.");
 
 					});// end of hash function 
@@ -278,6 +339,17 @@ var query = session_js.query(imgUploadMap).select();
     				'email': result[0].email  ,
     				'roll': 'USER'
     			}
+
+                /*
+                var sql = 'select * from `User`'
+var query = session.executeSql(sql);
+    
+query.then(function(result) {
+    console.log(result); // array with result 
+}).catch(function(error) {
+    console.log('Error: ' + error);
+});*/
+
 
     			connection.query('DELETE FROM ?? WHERE ?? = ?' , ["tempuser", "id" ,id], (err,rows) => { 
     				console.log("err" + err , "rows" + rows);
