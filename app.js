@@ -141,6 +141,18 @@ const session_js = js_orm.session(config);
 var sessionStore = new MySQLStore(config);
 
 
+const userMap = session_js.tableMap('users')
+.columnMap('id', 'id', {isAutoIncrement: true})
+.columnMap('uName','username')
+.columnMap('fName','firstName')
+.columnMap('lName','lastName')
+.columnMap('pass','password')
+.columnMap('roll', "userType")
+.columnMap('email','email')
+.columnMap('updateP','updateP')
+.columnMap('date', "time", {isAutoIncrement: true});
+
+
 const tempuserMap = session_js.tableMap('tempuser')
 .columnMap('id', 'id' )
 .columnMap('uName','userName')
@@ -232,36 +244,52 @@ var query = session_js.query(imgUploadMap).select();
 
 
     app.post('/resetpass', (req,res)=>{
+        let size = "";
         let changeEmail = req.body.email;
-        var query = session_js.query(userMap)
-        .where(
-        userMap.email.Equal(changeEmail) // =  
-        );
+                   User.find({where:{email : changeEmail}}).then(result => {
+                      if(result === 'undefined' || result === null? size = false : size = true);
+   //          if(typeof(result) === "object"? size = Object.keys(result).length: size = 0 );
 
-        query.then(function(result) {
+
+            
+   if(size ? addaNewPass(changeEmail) : res.json(false) );
+  res.json(true);
+});
+
+
+        // var query = session_js.query(userMap)
+        // .where(
+        // userMap.email.Equal(changeEmail) // =  
+        // );
+
+        // query.then(function(result) {
           
-        if(result.length >= 1 ? addaNewPass(changeEmail) : res.json(false) );
-        res.json(true)
-        });
+        //
+        // res.json(true)
+        // });
     })
 
 function addaNewPass(email){
-    let newData = {
-        email : email,
-        updateP : random.randomizer()
-    }
-     console.log(newData.email);
+  console.log("hjeh");
+  return;
+//     let newData = {
+//         email : email,
+//         updateP : random.randomizer()
+//     }
+//      console.log(newData.email);
 
-    let updateSQL =  "UPDATE users SET updateP = " + newData.updateP + " WHERE email ="  + newData.email;
+     
+//  
+//     let updateSQL =  "UPDATE users SET updateP = " + newData.updateP + " WHERE email ="  + newData.email;
 
-    let query = session_js.executeSql(updateSQL);
+//     let query = session_js.executeSql(updateSQL);
     
-query.then(function(result) {
-    console.log(result); // array with result 
-}).catch(function(error) {
-    console.log('Error: ' + error);
-});
-    // newpass.sendPass(changeEmail, 
+// query.then(function(result) {
+//     console.log(result); // array with result 
+// }).catch(function(error) {
+//     console.log('Error: ' + error);
+// });
+//     // newpass.sendPass(changeEmail, 
 }
 
     app.post('/register', (req,res)=>{ 
