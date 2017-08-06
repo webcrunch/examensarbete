@@ -107,10 +107,6 @@ const sequelize = new Sequelize(serverConst.database, serverConst.user, serverCo
   updatedAt: false
   }),
 
-
- 
-
-
   }
 
 

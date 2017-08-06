@@ -16,7 +16,7 @@ exports.sendMail = (email, token) =>{
 
 
 	let mailOptions = {
-    from: '"Fred Foo 👻" <foo@blurdybloop.com>', email, // sender address
+    from: '"Fred Foo 👻" <foo@blurdybloop.com>', // sender address
     to: 'testningvbc@gmail.com',  // list of receivers
     subject: 'Hello ✔', // Subject line
     text: 'Hello world ?', // plain text body

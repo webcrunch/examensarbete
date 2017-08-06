@@ -37,10 +37,10 @@ app.config(["$routeProvider", "$locationProvider", function($routeProvider, $loc
 	// 	templateUrl: "views/survey.html",
 	// 	controller: "surveyCtrl"
 	// })
-	// .when("/reset/:token?",{
-	// 	templateUrl: "views/newpassword.html",
-	// 	controller: "newPassCtrl"
-	// })
+	.when("/reset/:token?",{
+		templateUrl: "views/newpassword.html",
+		controller: "newPassCtrl"
+	})
 
 	.otherwise({
 		redirectTo: "/"

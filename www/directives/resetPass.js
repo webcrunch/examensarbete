@@ -4,24 +4,47 @@ app.directive('dis', [function(){
   return {
     templateUrl: 'directives/resetPass.html',
     controller: ["$scope", "$location", "$http", "$window", function($scope, $location, $http, $window){
-  
-    	 $scope.submit = function() {
+  		
+    	 $scope.sendNewRequestToAnNewPassword = function() {
 
-			$http({
+  			$http({
         url: '/resetpass',
         method: "POST",
         data: { email : $scope.email }
     })
-    .then(function(response) {
-    	$scope.respond = response;
-
-    		console.log(response.data);
+    .then(function successCallback(response) {
+    	$scope.send = "We have sent an email with an link you need to click on to be able to change your password";
             // success
-    }, 
-    function(response) { // optional
-            // failed
-            console.log("failed" , response);
-    });
+    // this callback will be called asynchronously
+    // when the response is available
+  }, function errorCallback(response) {
+  	    // failed
+            
+            $scope.error = "something went wrong";
+    // called asynchronously if an error occurs
+    // or server returns response with an error status.
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

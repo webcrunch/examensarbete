@@ -65,9 +65,7 @@ var upload  = multer({
         let endOfFile = pointer.concat(addpointer);
 
         let sameNameWithoutEndOfFile = originalname.slice(0, originalname.length-4);
-        
-
-
+      
         fullImg = sameNameWithoutEndOfFile + '-' + Date.now() + endOfFile;
         
               cb(null, fullImg);
@@ -75,9 +73,7 @@ var upload  = multer({
           })
         });
 
-
-
-
+console.log(upload);
 
 // var upload = multer({ storage: storage });
 
@@ -214,7 +210,7 @@ resave: true
 
     let image ={
         'imageName': fullImg,
-        'pathForImage': serverConst.bucket + fullImg ,
+        'pathForImage': serverConst.bucketPath + fullImg ,
         'extention' : imgArray[1],
         'WhoUploaded': imageparse.user
     };
@@ -246,51 +242,29 @@ var query = session_js.query(imgUploadMap).select();
     app.post('/resetpass', (req,res)=>{
         let size = "";
         let changeEmail = req.body.email;
-                   User.find({where:{email : changeEmail}}).then(result => {
-                      if(result === 'undefined' || result === null? size = false : size = true);
-   //          if(typeof(result) === "object"? size = Object.keys(result).length: size = 0 );
+                   User.find({where:{email : changeEmail }}).then(obj => {
+                      if(obj === 'undefined' || obj === null? size = false : size = true);
 
 
-            
-   if(size ? addaNewPass(changeEmail) : res.json(false) );
-  res.json(true);
-});
+                    if(size ? addaNewPass(changeEmail,obj ) : res.json(false) );
+                      res.json(true);
+                    });
 
-
-        // var query = session_js.query(userMap)
-        // .where(
-        // userMap.email.Equal(changeEmail) // =  
-        // );
-
-        // query.then(function(result) {
-          
-        //
-        // res.json(true)
-        // });
     })
 
-function addaNewPass(email){
-  console.log("hjeh");
-  return;
-//     let newData = {
-//         email : email,
-//         updateP : random.randomizer()
-//     }
-//      console.log(newData.email);
-
-     
-//  
-//     let updateSQL =  "UPDATE users SET updateP = " + newData.updateP + " WHERE email ="  + newData.email;
-
-//     let query = session_js.executeSql(updateSQL);
-    
-// query.then(function(result) {
-//     console.log(result); // array with result 
-// }).catch(function(error) {
-//     console.log('Error: ' + error);
-// });
-//     // newpass.sendPass(changeEmail, 
+function addaNewPass(email, obj){
+let token = random.randomizer();
+obj.update({
+  updateP: token
+}).then(function() {
+     newpass.sendPass(email,token);
+     return;
+  })
 }
+
+  app.post('newPass', (req,res) =>{
+
+  });
 
     app.post('/register', (req,res)=>{ 
 
@@ -343,6 +317,8 @@ function addaNewPass(email){
     	// 
     });
 
+
+
     app.get('/validate/:token', (req,res)=>{
     	const id = req.params.token;
 
@@ -367,16 +343,6 @@ function addaNewPass(email){
     				'email': result[0].email  ,
     				'roll': 'USER'
     			}
-
-                /*
-                var sql = 'select * from `User`'
-var query = session.executeSql(sql);
-    
-query.then(function(result) {
-    console.log(result); // array with result 
-}).catch(function(error) {
-    console.log('Error: ' + error);
-});*/
 
 
     			connection.query('DELETE FROM ?? WHERE ?? = ?' , ["tempuser", "id" ,id], (err,rows) => { 
@@ -454,7 +420,6 @@ query.then(function(result) {
 
 
   app.get('/dashboard', (req,res)=>{
-   console.log(req.session.username);
    if(req.session.username == 'undefined'){
       res.json("not logged in");
   }

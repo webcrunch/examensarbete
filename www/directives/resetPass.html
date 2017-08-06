@@ -1,12 +1,23 @@
-<p>123</p>
-<div class="padding">
-	
-<p>have you forget your password. Send the email you registered with to reseve a link so you may choose a new password</p>
+<!--Not an active view -->
 
-<form ng-submit="submit()">
-<label > your email</label>
-<input type="email" ng-model="email"  autofocus required>
-<input type="submit" value="Your email">
-</form>
+	<div class="container">
+		<div class="row row-centered space">
+			<div class="col-xs-12 col-sm-1 col-md-3 col-lg-3"></div>
+			<div class="col-xs-12 col-sm-10 col-md-6 col-lg-6 col-centered">
+      	<form class="form-signin formwidth loginwrapper">
+        	
+          <p class="form-signin-heading">have you forget your password. Send the email you registered with to reseve a link so you may choose a new
+            </p>
+        	<label for="inputUsername" class="sr-only">email</label>
+        	<input type="email" id="email" ng-model="email" class="form-control" placeholder="email:" required autofocus >
 
-</div>
+        	<div class="buttonspacer">
+        		<button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="sendNewRequestToAnNewPassword()">new password</button>
+        	</div>
+        	{{error}}
+          {{send}}
+      	</form>
+		    </div>
+		   <div class="col-xs-12 col-sm-1 col-md-3 col-lg-3"></div>
+	    </div>
+	  </div>  	
