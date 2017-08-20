@@ -7,6 +7,7 @@ multer                 = require('multer'),
 app                           = express(),
 aws                  = require('aws-sdk'),
 multerS3             = require('multer-s3'),
+/*rename the gitA.js to auth.js and the path should be as below. */
 serverConst             = r('./modules/auth.js'),
 Session            = r('express-session'),
 bodyParser               = r('body-parser'),
@@ -41,12 +42,36 @@ aws.config.update({
             region: serverConst.region
         });
 
-
 var s3 = new aws.S3();  
 
 var fullImg = "";
 
+/*
 
+use this if you dont want to implement amazon
+
+var multer  = require('multer');
+ +var storage = multer.diskStorage({
+ +    destination: function (req, file, cb) {
+ +        cb(null, './images/')
+ +    },
+ +    filename: function (req, file, cb) {
+ +      let mimeType = file.mimetype;
+ +        let pointer = ".";
+ +        let originalname = file.originalname;
+ +        let addpointer = mimeType.slice(6,mimeType.length);
+ +        let endOfFile = pointer.concat(addpointer);
+ +
+ +        let sameNameWithoutEndOfFile = originalname.slice(0, originalname.length-4);
+ +        
+ +
+ +        cb(null, sameNameWithoutEndOfFile + '-' + Date.now() + endOfFile);
+ +    }
+ +});
+ +var upload = multer({ storage: storage });
+
+
+*/
 var upload  = multer({
           storage: multerS3({
             s3: s3,
@@ -73,9 +98,7 @@ var upload  = multer({
           })
         });
 
-console.log(upload);
 
-// var upload = multer({ storage: storage });
 
 const sequelize = new Sequelize(serverConst.database, serverConst.user, serverConst.password, {
   host: 'localhost',
@@ -132,9 +155,8 @@ const connection = mysql.createConnection({
 });
 
 
-
-const session_js = js_orm.session(config);	
-var sessionStore = new MySQLStore(config);
+const session_js = js_orm.session(config),	
+      sessionStore = new MySQLStore(config);
 
 
 const userMap = session_js.tableMap('users')
@@ -149,7 +171,7 @@ const userMap = session_js.tableMap('users')
 .columnMap('date', "time", {isAutoIncrement: true});
 
 
-const tempuserMap = session_js.tableMap('tempuser')
+const tempuserMap = session_js.tableMap('tempusers')
 .columnMap('id', 'id' )
 .columnMap('uName','userName')
 .columnMap('fName','firstName')
@@ -252,25 +274,26 @@ var query = session_js.query(imgUploadMap).select();
 
     })
 
-function addaNewPass(email, obj){
-let token = random.randomizer();
-obj.update({
-  updateP: token
-}).then(function() {
-     newpass.sendPass(email,token);
-     return;
-  })
-}
+          function addaNewPass(email, obj){
+          let token = random.randomizer();
+          obj.update({
+            updateP: token
+          }).then(function() {
+               newpass.sendPass(email,token);
+               return;
+            })
+          }
 
   app.post('newPass', (req,res) =>{
 
   });
 
     app.post('/register', (req,res)=>{ 
-
+            console.log(req.body);
+      let email = req.body.email;
     	var query = session_js.query(userMap)
     	.where(
-        userMap.email.Equal(req.body.email) // =  
+        userMap.email.Equal(email) // =  
         );
 
     	query.then(function(result) {
@@ -285,19 +308,15 @@ obj.update({
 					if(err)console.log(err);
 					let insertPers = {
 						'id': random.randomizer(),
-						'uName': req.body.userName,
-						'fName': req.body.firstName,
-						'lName': req.body.lastName,
-						'pass': hash,
+						'userName': req.body.userName,
+						'firstName': req.body.firstName,
+						'lastName': req.body.lastName,
+						'password': hash,
 						'email': req.body.email
 					}
 
-					tempuserMap.Insert(insertPers).then((result)=>{
-						console.log("inserted :" + result.affectedRows);
-					}).catch((error)=>{
-						console.log("Error" + error);
-						res.json(error);
-					})
+          TUser.create(insertPers);
+          TUser.sync();
 
                   mail.sendMail(email, insertPers.id);
                   res.json("we have sent you an confirmation mail. If you have got any check your spam mail.");
@@ -321,13 +340,14 @@ obj.update({
 
     app.get('/validate/:token', (req,res)=>{
     	const id = req.params.token;
-
+        console.log(id);
+    
     	var query = session_js.query(tempuserMap)
     	.where(
     		tempuserMap.id.Equal(id));
 
     	query.then((result)=> {
-    		console.log(result);
+    		console.log(result, "res");
 
     		if(result.length < 1 || result === "undefined"){
 
@@ -343,11 +363,17 @@ obj.update({
     				'email': result[0].email  ,
     				'roll': 'USER'
     			}
+            console.log(newInsert, "newI");
 
+            TUser.destroy({
+            where: {
+            id: id
+            }
+            });
 
-    			connection.query('DELETE FROM ?? WHERE ?? = ?' , ["tempuser", "id" ,id], (err,rows) => { 
-    				console.log("err" + err , "rows" + rows);
-    			})
+    			// connection.query('DELETE FROM ?? WHERE ?? = ?' , ["tempuser", "id" ,id], (err,rows) => { 
+    			// 	console.log("err" + err , "rows" + rows);
+    			// })
 
     			userMap.Insert(newInsert).then ((result)=>{
 
@@ -357,7 +383,8 @@ obj.update({
     			})
     		}
     	}).catch((err)=>{
-    		res.json("e", err);
+
+    		console.log("e", err);
 	});// end of query
     })
 

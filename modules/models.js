@@ -35,7 +35,9 @@ const sequelize = new Sequelize(serverConst.database, serverConst.user, serverCo
   
   email:
    Sequelize.STRING,
-  userType: Sequelize.STRING,
+
+  userType: 
+  Sequelize.STRING,
 
   updateP:
     Sequelize.STRING,
@@ -50,6 +52,8 @@ const sequelize = new Sequelize(serverConst.database, serverConst.user, serverCo
   updatedAt: false
    }),
   Tuser : sequelize.define('tempuser', {
+  
+
   userName:
    Sequelize.STRING,
   
