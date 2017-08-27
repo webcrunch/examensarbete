@@ -7,7 +7,7 @@ multer                 = require('multer'),
 app                           = express(),
 aws                  = require('aws-sdk'),
 multerS3             = require('multer-s3'),
-/*rename the gitA.js to auth.js and the path should be as below. */
+/*rename the gitA.js to auth.js and the path should be as below*/
 serverConst             = r('./modules/auth.js'),
 Session            = r('express-session'),
 bodyParser               = r('body-parser'),
@@ -33,7 +33,8 @@ models =           r('./modules/models.js'),
 MySQLStore = r('express-mysql-session')(Session),
 bcrypt = r('bcryptjs');
 /*End of const declaration*/
-
+/*hash variable, empthy untill it will be inserted an value and after the value is used it will be mepthy again*/
+var SaltPass = "";
 
 aws.config.update({
             signatureVersion: serverConst.signatureVersion,
@@ -284,9 +285,43 @@ var query = session_js.query(imgUploadMap).select();
             })
           }
 
-  app.post('newPass', (req,res) =>{
+  app.post('/updatePassword', (req,res) =>{
+      let dataChange = req.body.data;
+      salt(dataChange.password);
 
+      
+      User.find({ where: {updateP : dataChange.token} }).then(obj => {
+              if(obj === 'undefined' || obj === null? size = false : size = true);
+
+
+                    if(size ?    obj.update({
+                  password : SaltPass,
+                  updateP: ""
+                }) : res.json(false) );
+                  res.json({message: "your password changed"});
+             
+                });
+
+        SaltPass = "";
   });
+
+
+
+    function salt(pass){
+        var saltRounds = 10;
+          bcrypt.genSalt(saltRounds, (err, salt) => {
+            if(err)return err ;
+        
+        bcrypt.hash(pass, salt, (err, hash) => {
+          if(err)return err;
+          
+          
+          SaltPass = hash;
+      })
+       });
+
+    }
+
 
     app.post('/register', (req,res)=>{ 
             console.log(req.body);

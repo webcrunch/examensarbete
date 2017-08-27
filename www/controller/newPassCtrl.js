@@ -15,11 +15,14 @@ app.controller('newPassCtrl', ['$scope', '$location', '$http', '$sce', '$routePa
     }
   }
 	$scope.sendNewPassword = function(data){
-		$http({
+		
+
+    $http({
       url: '/updatePassword',
       method: "POST",
       data: {'data': data}
     }).then(function success(res) {
+      console.log(res.data);
      $scope.send = res.data.message;
      $scope.password = "";
             
