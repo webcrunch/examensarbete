@@ -39,7 +39,7 @@
     "jquery": "^3.2.1",
     "nodemailer": "*",
      "bcryptjs": "^2.4.3",
-     "aws-sdk": "^2.43.0",
+     "aws-sdk": "^2.43.0"
   },
   "devDependencies": {}
 }
