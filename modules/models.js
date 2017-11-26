@@ -77,7 +77,7 @@ const sequelize = new Sequelize(serverConst.database, serverConst.user, serverCo
   updatedAt: false
    }),
 
-  image : sequelize.define('images', {
+  image : sequelize.define('dd', {
   	name:
    Sequelize.STRING,
    path:
@@ -86,7 +86,7 @@ const sequelize = new Sequelize(serverConst.database, serverConst.user, serverCo
    Sequelize.STRING,
    user: {
               type: Sequelize.INTEGER,
-                   references: { model: 'users', key: 'id' }
+                   // references: { model: 'users', key: 'id' }
 
         },
   },{
@@ -99,10 +99,10 @@ const sequelize = new Sequelize(serverConst.database, serverConst.user, serverCo
    comment : sequelize.define('comment', {
   	text:
    Sequelize.STRING ,
-   commentauther: {
+   comment_auther: {
 
   type: Sequelize.INTEGER,
-  references: { model: 'users', key: 'id' }
+  // references: { model: 'users', key: 'id' }
    }
    
   },{

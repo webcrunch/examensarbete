@@ -1,9 +1,12 @@
 
+
+/*förklara från börjar vad allt gör på engenska */
+
 const                         r = require,
 express                    = r('express'),
 fs                              = r("fs"),
-
-multer                 = require('multer'),
+path                        = r("path"), 
+multer                 = r('multer'),
 app                           = express(),
 aws                  = require('aws-sdk'),
 multerS3             = require('multer-s3'),
@@ -494,11 +497,11 @@ var query = session_js.query(imgUploadMap).select();
 
   app.get(Server.endpoint, (req, res) => {
    res.header('X-Client-id', req.sessionID).header('X-username', req.session.xUsername).header('X-access', req.session.xAccess).header("Access-Control-Allow-Methods", "GET, POST","PUT").header("Access-Control-Allow-Headers", "X-Requested-With").header("Access-Control-Allow-Origin", "*");   
-   res.sendFile(serverConst.appRoot + Server.webRoot + Server.indexFile);
+   res.sendFile(path.normalize(serverConst.appRoot + Server.webRoot + Server.indexFile));
 			// res.json({1:appRoot, 2:Server.webRoot, 3:Server.indexFile});
 			
 		});
- 
+
    // listen on port 3002
    app.listen(Server.port,  function() {
    	console.log("Server listening on port ", Server.port);

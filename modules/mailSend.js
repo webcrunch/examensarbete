@@ -2,8 +2,7 @@ const mail = require('nodemailer');
 // function to create an email and send it 
 
 exports.sendMail = (email, token) =>{
-	console.log(token);
-	var transporter = mail.createTransport({
+	let transporter = mail.createTransport({
    service: "Gmail",  // sets automatically host, port and connection security settings
    auth: {
    	user: 'testningvbc@gmail.com',
@@ -14,10 +13,14 @@ exports.sendMail = (email, token) =>{
    }
  });
 
+  let masterMail = 'testningvbc@gmail.com';
+  let secondMail = email;
 
-	let mailOptions = {
+  let maillist = masterMail + ","  + secondMail;
+  
+  let mailOptions = {
     from: '"Fred Foo 👻" <foo@blurdybloop.com>', // sender address
-    to: 'testningvbc@gmail.com',  // list of receivers
+    to: maillist,  // list of receivers
     subject: 'Hello ✔', // Subject line
     text: 'Hello world ?', // plain text body
 
