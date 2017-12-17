@@ -7,7 +7,8 @@ See github page for the written thesis.
 */
 
 // This is the node server file(app.js). From here everything happens. 
-
+// When you start from beginning and have cloned or downloaded from github you need to change the
+// name of TempA.js into auth.js. Otherwise app.js will not find the correct information it will need for connection.
 // First we declares all variables. And we make them const because they will not change. 
 const                         r = require,
 express                    = r('express'),
@@ -17,7 +18,8 @@ multer                 = r('multer'),
 app                           = express(),
 aws                  = require('aws-sdk'),
 multerS3             = require('multer-s3'),
-serverConst             = r('./modules/auth.js'),
+serverConst             = r('./modules/auth.js'),// <--IMPORTANT 
+
 Session            = r('express-session'),
 bodyParser               = r('body-parser'),
 mysql                        = r('mysql'),
