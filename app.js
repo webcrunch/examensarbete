@@ -290,7 +290,7 @@ var query = session_js.query(imgUploadMap).select();
         
     })
 
-
+    // When an User don´t remember its password and want to reset it with another. 
     app.post('/resetpass', (req,res)=>{
         let size = "";
         let changeEmail = req.body.email;
