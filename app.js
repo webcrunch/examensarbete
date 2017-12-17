@@ -313,17 +313,27 @@ var query = session_js.query(imgUploadMap).select();
                return;
             })
           }
-
+  // When an user wants to update its password. 
   app.post('/updatePassword', (req,res) =>{
+
+      // set an variable with data from frontend. 
       let dataChange = req.body.data;
+      // call the salt function and set password as an parameter. 
+      // The return statement will be inserted into SaltPass variable. 
       salt(dataChange.password);
 
+      /*Check for the information about the user.
+        Make an SQL query with sequelize and the result will be obj. 
+        SQL query: SQL Select * where updateP = dataChange.token
+       */
       
       User.find({ where: {updateP : dataChange.token} }).then(obj => {
+              // check if obj got an size. If it got an size set it to true. Otherwise set it to false. 
               if(obj === 'undefined' || obj === null? size = false : size = true);
 
-                    // check if size is true then do an update on obj. And send an message back to frontend. 
+                    // check if obj is true. then do an update on obj. And send an message back to frontend. 
                     // Otherwise just send an false message back to frontend. 
+                    // SQL (Update obj set password : SaltPass , updateP = "")
                     if(size ?    obj.update({
                   password : SaltPass,
                   updateP: ""
@@ -512,12 +522,16 @@ var query = session_js.query(imgUploadMap).select();
 
 
   app.get('/dashboard', (req,res)=>{
-   if(req.session.username == 'undefined'){
-      res.json("not logged in");
-  }
-  else{
-      res.json(req.session.username);
-  }
+    const name = req.session.userName;
+    console.log(name, "gg");
+    res.json(true);
+  //  if(req.session.username === 'undefined'){
+  //     console.log("hek");
+  //     res.json({text: "not logged in"});
+  // }
+  // else{
+  //     res.json({text: req.session.username});
+  // }
 })
 
 
