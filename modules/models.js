@@ -1,4 +1,4 @@
- const                         r = require,
+const                         r = require,
 serverConst             = r('./auth.js'),
 
 Sequelize = r('sequelize');

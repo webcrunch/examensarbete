@@ -1,7 +1,14 @@
 
 
-/*förklara från börjar vad allt gör på engenska */
+/*förklara från börjar vad allt gör på engenska 
+Author: Jarl H Lindquist
+Code for Thesis about an cms for uploading pictures. 
+See github page for the written thesis. 
+*/
 
+// This is the node server file(app.js). From here everything happens. 
+
+// First we declares all variables. And we make them const because they will not change. 
 const                         r = require,
 express                    = r('express'),
 fs                              = r("fs"),
@@ -10,7 +17,6 @@ multer                 = r('multer'),
 app                           = express(),
 aws                  = require('aws-sdk'),
 multerS3             = require('multer-s3'),
-/*rename the gitA.js to auth.js and the path should be as below*/
 serverConst             = r('./modules/auth.js'),
 Session            = r('express-session'),
 bodyParser               = r('body-parser'),
@@ -19,6 +25,15 @@ js_orm = r('js-hibernate'),
 
 Sequelize = r('sequelize'),
 
+
+
+/* 
+Get data from moduls-> auth.js . 
+In that file is all sensetive data like password set. 
+In Server object we get the root of the whole project. 
+EndPoint is 
+
+*/
 Server = {
     appRoot : serverConst.appRoot,
     endpoint : serverConst.endpoint,
@@ -38,6 +53,8 @@ bcrypt = r('bcryptjs');
 /*End of const declaration*/
 /*hash variable, empthy untill it will be inserted an value and after the value is used it will be mepthy again*/
 var SaltPass = "";
+console.log(Server);
+
 
 aws.config.update({
             signatureVersion: serverConst.signatureVersion,
@@ -46,13 +63,15 @@ aws.config.update({
             region: serverConst.region
         });
 
-var s3 = new aws.S3();  
-
+const s3 = new aws.S3();  
+// This variable is an temporary container for image upload in multer. The purpose is 
 var fullImg = "";
 
 /*
 
-use this if you dont want to implement amazon
+use this if you dont want to implement amazon, 
+instead the images will upload onto another place like 
+localy on the computer. 
 
 var multer  = require('multer');
  +var storage = multer.diskStorage({
@@ -118,7 +137,7 @@ const sequelize = new Sequelize(serverConst.database, serverConst.user, serverCo
   }
 });
  
-
+// Check if sequlize could connect with database. 
 sequelize.authenticate().then(function(err) {
     if (!!err) {
         console.log('Unable to connect to the database:', err)
@@ -127,17 +146,20 @@ sequelize.authenticate().then(function(err) {
     }
 });
 
+// Variable that store the model of Users from moduels -> models.js 
 const User = models.User;
- 
 User.sync();
+
+// Variable that store the model of Temporary Users from moduels -> models.js
 const TUser = models.Tuser; 
 TUser.sync();
 
+// Variable that store the model of Images from moduels -> models.js
 const I = models.image;
 // const TUser = models.Tuser; 
 I.sync({logging: console.log });
 
-
+// Variable that store the model of Comments from moduels -> models.js
 const comment = models.comment;
 comment.sync({logging: console.log})
 const config = {
@@ -225,7 +247,7 @@ resave: true
     app.disable('x-powered-by');
 
 
-
+    // 
     app.post('/multer', upload.any(), (req, res) =>{
     // uploaded the files, got the filen name and the route. Insert it into the database. 
     // ?? Who uploaded it ? that is the question to answer. 
