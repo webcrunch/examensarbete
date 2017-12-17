@@ -126,6 +126,9 @@ var upload  = multer({
 const sequelize = new Sequelize(serverConst.database, serverConst.user, serverConst.password, {
   host: 'localhost',
   dialect: 'mysql',
+    logging: false,
+
+
     // define: {
     //     timestamps: false
     // },
@@ -147,21 +150,22 @@ sequelize.authenticate().then(function(err) {
 });
 
 // Variable that store the model of Users from moduels -> models.js 
+// removed all console.logging on start of all models => (User, TUser, Image, Comments)
 const User = models.User;
-User.sync();
+User.sync({logging: false});
 
 // Variable that store the model of Temporary Users from moduels -> models.js
 const TUser = models.Tuser; 
-TUser.sync();
+TUser.sync({logging: false});
 
 // Variable that store the model of Images from moduels -> models.js
 const I = models.image;
 // const TUser = models.Tuser; 
-I.sync({logging: console.log });
+I.sync({logging: false});
 
 // Variable that store the model of Comments from moduels -> models.js
 const comment = models.comment;
-comment.sync({logging: console.log})
+comment.sync({logging: false})
 const config = {
 	host     : serverConst.host,
 	user     : serverConst.user,
@@ -318,7 +322,8 @@ var query = session_js.query(imgUploadMap).select();
       User.find({ where: {updateP : dataChange.token} }).then(obj => {
               if(obj === 'undefined' || obj === null? size = false : size = true);
 
-
+                    // check if size is true then do an update on obj. And send an message back to frontend. 
+                    // Otherwise just send an false message back to frontend. 
                     if(size ?    obj.update({
                   password : SaltPass,
                   updateP: ""
@@ -326,7 +331,7 @@ var query = session_js.query(imgUploadMap).select();
                   res.json({message: "your password changed"});
              
                 });
-
+        // Make variable of SaltPass empty.
         SaltPass = "";
   });
 
@@ -524,7 +529,7 @@ var query = session_js.query(imgUploadMap).select();
 			
 		});
 
-   // listen on port 3002
+   // listen on port 3002 
    app.listen(Server.port,  function() {
    	console.log("Server listening on port ", Server.port);
    });
