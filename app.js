@@ -77,21 +77,21 @@ localy on the computer.
 
 var multer  = require('multer');
  +var storage = multer.diskStorage({
- +    destination: function (req, file, cb) {
- +        cb(null, './images/')
- +    },
- +    filename: function (req, file, cb) {
- +      let mimeType = file.mimetype;
- +        let pointer = ".";
- +        let originalname = file.originalname;
- +        let addpointer = mimeType.slice(6,mimeType.length);
- +        let endOfFile = pointer.concat(addpointer);
- +
- +        let sameNameWithoutEndOfFile = originalname.slice(0, originalname.length-4);
- +        
- +
- +        cb(null, sameNameWithoutEndOfFile + '-' + Date.now() + endOfFile);
- +    }
+     destination: function (req, file, cb) {
+         cb(null, './images/')
+     },
+     filename: function (req, file, cb) {
+       let mimeType = file.mimetype;
+         let pointer = ".";
+         let originalname = file.originalname;
+         let addpointer = mimeType.slice(6,mimeType.length);
+         let endOfFile = pointer.concat(addpointer);
+ 
+         let sameNameWithoutEndOfFile = originalname.slice(0, originalname.length-4);
+         
+ 
+         cb(null, sameNameWithoutEndOfFile + '-' + Date.now() + endOfFile);
+     }
  +});
  +var upload = multer({ storage: storage });
 
