@@ -19,7 +19,7 @@
   "homepage": "https://github.com/webcrunch/examensarbete#readme",
   "dependencies": {
     "angular": "1.6.6",
-    "aws-sdk": "^2.384.0",
+    "aws-sdk": "^2.814.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "*",
     "bootstrap": "4.0.0-alpha.6",
